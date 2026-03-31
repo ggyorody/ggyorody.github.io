@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>North Carolina Beach Trip</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .input-cell { @apply w-full bg-transparent border-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 text-right; }
+        .text-cell { @apply w-full bg-transparent border-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1; }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        .table-container { overflow-x: auto; }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .loading-overlay { @apply fixed inset-0 bg-white/80 flex items-center justify-center z-50 transition-opacity duration-300; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen pb-20">
+
+    <div id="loader" class="loading-overlay">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight text-emerald-700">🏖️ North Carolina Beach Trip</h1>
+                    <p class="text-gray-500 mt-1 font-medium">July 2nd — July 5th • <span id="group-size-display" class="text-blue-600">8</span> People</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <div id="sync-status" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 flex items-center gap-1 self-center mr-2">
+                        <span id="sync-indicator" class="h-2 w-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                        <span id="sync-text">Connecting...</span>
+                    </div>
+                    <button onclick="exportToCSV()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-4 py-2 rounded-lg font-semibold text-sm transition flex items-center gap-2">
+                        📋 Copy for Excel
+                    </button>
+                    <button onclick="window.print()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm transition">
+                        Print / PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 border-t pt-6">
+                <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                    <p class="text-blue-600 text-xs font-bold uppercase tracking-widest mb-1">Total Trip Cost</p>
+                    <p class="text-3xl font-bold text-blue-900" id="grand-total">$0.00</p>
+                </div>
+                <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-100">
+                    <p class="text-emerald-600 text-xs font-bold uppercase tracking-widest mb-1">Cost Per Person</p>
+                    <p class="text-3xl font-bold text-emerald-900" id="per-person-total">$0.00</p>
+                </div>
+                <div class="bg-purple-50 p-5 rounded-xl border border-purple-100">
+                    <p class="text-purple-600 text-xs font-bold uppercase tracking-widest mb-1">Group Size</p>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="group-size-input" value="8" min="1" oninput="handleGroupSizeChange()" 
+                        class="text-3xl font-bold text-purple-900 bg-transparent border-none w-16 focus:ring-0 p-0">
+                        <span class="text-purple-900 font-medium text-lg">People</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Expenses -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <h2 class="font-bold text-gray-800 flex items-center gap-2">
+                            💰 Budget & Expenses
+                        </h2>
+                        <button onclick="addNewExpense()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md transition font-bold uppercase">
+                            + Add Expense
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table class="w-full text-left border-collapse" id="expense-table">
+                            <thead>
+                                <tr class="bg-gray-100/50">
+                                    <th class="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider w-2/5">Item</th>
+                                    <th class="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">Total ($)</th>
+                                    <th class="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">Each ($)</th>
+                                    <th class="px-4 py-3 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Notes</th>
+                                    <th class="px-4 py-3 w-8"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-body">
+                                <!-- Expenses injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 bg-gray-50 border-t flex justify-end items-center gap-4">
+                        <span class="text-sm font-bold text-gray-800">Trip Subtotal: <span id="subtotal-display" class="text-blue-600 ml-1">$0.00</span></span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">📝 General Planning Notes</h3>
+                    <textarea id="general-notes" oninput="saveNotes(this.value)" class="w-full h-40 p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition leading-relaxed" placeholder="Keep track of Airbnb links, gate codes, or meal ideas here..."></textarea>
+                </div>
+            </div>
+
+            <!-- Right Column: Interactive Itinerary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
+                    <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <h2 class="font-bold text-gray-800 flex items-center gap-2">
+                            📅 Itinerary
+                        </h2>
+                        <button onclick="addNewItineraryEvent()" class="text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1.5 rounded transition font-bold uppercase">
+                            + Add Event
+                        </button>
+                    </div>
+                    
+                    <div class="p-0 flex-grow">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100/50">
+                                    <th class="px-3 py-2 text-[10px] font-bold text-gray-500 uppercase w-24">Time</th>
+                                    <th class="px-3 py-2 text-[10px] font-bold text-gray-500 uppercase">Activity</th>
+                                    <th class="w-6"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itinerary-body">
+                                <!-- Itinerary items injected by JS -->
+                            </tbody>
+                        </table>
+                        <div id="itinerary-empty" class="hidden p-12 text-center text-gray-400 text-sm">
+                            <p class="mb-2">📅</p>
+                            Schedule is empty.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Toast -->
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full text-sm font-medium shadow-2xl opacity-0 pointer-events-none transition-opacity duration-300 z-50">
+        Copied to clipboard!
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nc-beach-trip-2026';
+
+        let user = null;
+        let expenses = [];
+        let itinerary = [];
+        let groupSize = 8;
+
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth failed", error);
+            }
+        };
+
+        initAuth();
+
+        onAuthStateChanged(auth, (u) => {
+            user = u;
+            if (user) {
+                setupListeners();
+                document.getElementById('loader').classList.add('opacity-0');
+                setTimeout(() => document.getElementById('loader').classList.add('hidden'), 300);
+            }
+        });
+
+        function updateSyncStatus(status) {
+            const indicator = document.getElementById('sync-indicator');
+            const text = document.getElementById('sync-text');
+            if (status === 'synced') {
+                indicator.className = 'h-2 w-2 rounded-full bg-green-500';
+                text.innerText = 'Cloud Synced';
+            } else if (status === 'saving') {
+                indicator.className = 'h-2 w-2 rounded-full bg-yellow-400 animate-pulse';
+                text.innerText = 'Saving...';
+            }
+        }
+
+        function setupListeners() {
+            if (!user) return;
+
+            // Listen for Expenses
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'expenses'), (snapshot) => {
+                expenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderExpenses();
+                calculateTotals();
+                updateSyncStatus('synced');
+            }, (err) => console.error(err));
+
+            // Listen for Itinerary
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'itinerary'), (snapshot) => {
+                itinerary = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderItinerary();
+                updateSyncStatus('synced');
+            }, (err) => console.error(err));
+
+            // Corrected Path: artifacts/[appId]/public/data/settings/general (6 segments)
+            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general'), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    groupSize = data.groupSize || 8;
+                    document.getElementById('group-size-input').value = groupSize;
+                    document.getElementById('group-size-display').innerText = groupSize;
+                    document.getElementById('general-notes').value = data.notes || "";
+                    calculateTotals();
+                } else {
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general'), { groupSize: 8, notes: "" });
+                }
+                updateSyncStatus('synced');
+            }, (err) => console.error(err));
+        }
+
+        window.addNewExpense = async () => {
+            if (!user) return;
+            updateSyncStatus('saving');
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'expenses'), {
+                name: "New Expense",
+                total: 0,
+                notes: ""
+            });
+        };
+
+        window.updateExpense = async (id, field, value) => {
+            if (!user) return;
+            updateSyncStatus('saving');
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'expenses', id);
+            await updateDoc(docRef, { [field]: field === 'total' ? parseFloat(value) || 0 : value });
+        };
+
+        window.removeExpense = async (id) => {
+            if (!user) return;
+            updateSyncStatus('saving');
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'expenses', id));
+        };
+
+        function renderExpenses() {
+            const tbody = document.getElementById('expense-body');
+            tbody.innerHTML = '';
+            expenses.forEach(exp => {
+                const row = document.createElement('tr');
+                row.className = 'expense-row';
+                row.innerHTML = `
+                    <td class="px-4 py-2 border-b"><input type="text" class="text-cell font-semibold text-gray-800" value="${exp.name}" onchange="updateExpense('${exp.id}', 'name', this.value)"></td>
+                    <td class="px-4 py-2 border-b"><input type="number" step="0.01" class="input-cell font-bold text-blue-700 total-input" value="${exp.total}" onchange="updateExpense('${exp.id}', 'total', this.value)"></td>
+                    <td class="px-4 py-2 border-b text-right text-gray-500 font-medium text-sm">$${(exp.total / groupSize).toFixed(2)}</td>
+                    <td class="px-4 py-2 border-b"><input type="text" class="text-cell text-sm text-gray-500" value="${exp.notes || ''}" placeholder="Notes..." onchange="updateExpense('${exp.id}', 'notes', this.value)"></td>
+                    <td class="px-4 py-2 border-b text-center"><button onclick="removeExpense('${exp.id}')" class="text-gray-300 hover:text-red-500 transition">✕</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        window.addNewItineraryEvent = async () => {
+            if (!user) return;
+            updateSyncStatus('saving');
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'itinerary'), {
+                datetime: '2026-07-02T12:00',
+                event: 'New Event'
+            });
+        };
+
+        window.updateItinerary = async (id, field, value) => {
+            if (!user) return;
+            updateSyncStatus('saving');
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'itinerary', id);
+            await updateDoc(docRef, { [field]: value });
+        };
+
+        window.removeItineraryRow = async (id) => {
+            if (!user) return;
+            updateSyncStatus('saving');
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'itinerary', id));
+        };
+
+        function renderItinerary() {
+            const tbody = document.getElementById('itinerary-body');
+            const emptyState = document.getElementById('itinerary-empty');
+            const sortedItinerary = [...itinerary].sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+            tbody.innerHTML = '';
+            
+            if (sortedItinerary.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                sortedItinerary.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = 'group hover:bg-emerald-50/30 transition';
+                    row.innerHTML = `
+                        <td class="px-3 py-2 border-b">
+                            <input type="datetime-local" value="${item.datetime}" 
+                                onchange="updateItinerary('${item.id}', 'datetime', this.value)"
+                                class="text-[10px] font-bold text-emerald-600 bg-transparent border-none focus:ring-0 p-0 w-full cursor-pointer">
+                        </td>
+                        <td class="px-3 py-2 border-b">
+                            <input type="text" value="${item.event}" 
+                                onchange="updateItinerary('${item.id}', 'event', this.value)"
+                                class="text-xs text-gray-700 bg-transparent border-none focus:ring-0 p-0 w-full font-semibold"
+                                placeholder="Activity...">
+                        </td>
+                        <td class="px-1 border-b text-center">
+                            <button onclick="removeItineraryRow('${item.id}')" class="text-gray-200 hover:text-red-400 text-xs opacity-0 group-hover:opacity-100 transition">✕</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        window.handleGroupSizeChange = async () => {
+            const newSize = parseFloat(document.getElementById('group-size-input').value) || 1;
+            if (!user) return;
+            updateSyncStatus('saving');
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general'), { groupSize: newSize });
+        };
+
+        let notesTimeout;
+        window.saveNotes = (val) => {
+            clearTimeout(notesTimeout);
+            notesTimeout = setTimeout(async () => {
+                if (!user) return;
+                updateSyncStatus('saving');
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general'), { notes: val });
+            }, 1000);
+        };
+
+        window.calculateTotals = () => {
+            const totalSum = expenses.reduce((acc, exp) => acc + (exp.total || 0), 0);
+            const each = totalSum / groupSize;
+            document.getElementById('grand-total').innerText = '$' + totalSum.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('subtotal-display').innerText = '$' + totalSum.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('per-person-total').innerText = '$' + each.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        };
+
+        window.exportToCSV = () => {
+            let csv = "Item,Total Cost,Cost Per Person,Notes\n";
+            expenses.forEach(e => {
+                csv += `"${e.name}",${e.total},${(e.total / groupSize).toFixed(2)},"${e.notes || ''}"\n`;
+            });
+            const el = document.createElement('textarea');
+            el.value = csv;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+        };
+    </script>
+</body>
+</html>
