@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Giovanni Gyorody</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --cream: #FAF8F4;
+    --warm-white: #F5F2EC;
+    --ink: #0F0E0C;
+    --ink-soft: #2A2825;
+    --ink-muted: #6B6560;
+    --rule: #D4CFC7;
+    --gold: #B8A98A;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── Cursor ─────────────────────────── */
+  .cursor {
+    position: fixed; width: 8px; height: 8px;
+    background: var(--ink); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease, background 0.25s ease;
+    transform: translate(-50%,-50%);
+  }
+  .cursor-ring {
+    position: fixed; width: 32px; height: 32px;
+    border: 1px solid var(--ink); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transition: width 0.3s ease, height 0.3s ease,
+                opacity 0.3s ease, border-color 0.25s ease;
+    transform: translate(-50%,-50%); opacity: 0.4;
+  }
+  .cursor.light { background: var(--cream); }
+  .cursor-ring.light { border-color: rgba(250,248,244,0.7); }
+
+  /* ── Splash ─────────────────────────── */
+  #splash {
+    position: fixed; inset: 0; background: var(--ink);
+    z-index: 1000; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.9s ease, visibility 0.9s ease;
+  }
+  #splash.gone { opacity: 0; visibility: hidden; }
+  .sp-gg {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-weight: 300; font-size: clamp(5rem, 18vw, 15rem);
+    color: var(--cream); line-height: 1; letter-spacing: -0.02em;
+    opacity: 0; animation: up 0.7s ease 0.3s forwards;
+  }
+  .sp-name {
+    font-size: clamp(0.55rem, 1.3vw, 0.8rem); font-weight: 400;
+    letter-spacing: 0.45em; text-transform: uppercase; color: var(--gold);
+    margin-top: 1rem;
+    opacity: 0; animation: up 0.7s ease 0.75s forwards;
+  }
+  @keyframes up {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ── Main ───────────────────────────── */
+  #main { opacity: 0; transition: opacity 0.9s ease; }
+  #main.show { opacity: 1; }
+
+  /* ── Nav ────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    padding: 1.5rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(250, 248, 244, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease, background 0.3s ease, opacity 0.4s ease;
+    opacity: 0;
+  }
+  nav.nav-ready { opacity: 1; }
+  nav.nav-scrolled { border-bottom-color: var(--rule); background: rgba(250, 248, 244, 0.95); }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-weight: 300; font-size: 1.5rem;
+    color: var(--ink); text-decoration: none; transition: color 0.25s;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+  .nav-links a {
+    font-size: 0.6rem; font-weight: 500; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--ink-muted);
+    text-decoration: none; transition: color 0.25s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-resume {
+    font-size: 0.6rem !important; font-weight: 600 !important;
+    color: var(--ink) !important; border: 1px solid var(--rule);
+    padding: 0.5rem 1.2rem;
+    transition: background 0.25s, border-color 0.25s, color 0.25s !important;
+  }
+  .nav-resume:hover { background: var(--ink) !important; color: var(--cream) !important; border-color: var(--ink) !important; }
+
+  /* ── Hero ───────────────────────────── */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 8rem;   /* clears fixed nav */
+    padding-bottom: 6rem;
+    padding-right: 4rem;
+  }
+  .hero-eyebrow {
+    font-size: 0.6rem; font-weight: 500; letter-spacing: 0.4em;
+    text-transform: uppercase; color: var(--ink-muted); margin-bottom: 2.5rem;
+    opacity:0; animation: up 0.8s ease 1.6s forwards;
+  }
+  .hero-first {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-weight: 300; font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1; color: var(--ink-muted); display: block;
+    opacity:0; animation: up 0.8s ease 1.3s forwards;
+  }
+  .hero-last {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-weight: 600; font-size: clamp(4rem, 9vw, 9rem);
+    line-height: 0.9; color: var(--ink); display: block; letter-spacing: -0.02em;
+    opacity:0; animation: up 0.8s ease 1.4s forwards;
+  }
+  .hero-rule { width: 60px; height: 1px; background: var(--rule); margin: 2.5rem 0; opacity:0; animation: up 0.6s ease 1.7s forwards; }
+  .hero-para {
+    font-size: clamp(0.78rem, 1.1vw, 0.9rem); font-weight: 300;
+    line-height: 1.9; color: var(--ink-soft); max-width: 420px;
+    opacity:0; animation: up 0.8s ease 1.8s forwards;
+  }
+  .hero-para strong { font-weight: 500; color: var(--ink); }
+  .hero-para em { font-style: italic; color: var(--ink-muted); }
+  .hero-inline-link {
+    color: var(--ink); font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1px;
+    transition: border-color 0.2s ease;
+    display: inline-flex; align-items: baseline; gap: 0.15em;
+  }
+  .hero-inline-link:hover { border-color: var(--ink); }
+  .link-arrow {
+    font-size: 0.7em;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    display: inline-block;
+  }
+  .hero-inline-link:hover .link-arrow {
+    opacity: 1;
+    transform: translate(1px, -1px);
+  }
+  .hero-actions {
+    display: flex; gap: 2rem; align-items: center; margin-top: 3rem;
+    opacity:0; animation: up 0.8s ease 2s forwards;
+  }
+  .hero-cta-link {
+    font-size: 0.6rem; font-weight: 600; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--ink); text-decoration: none;
+    border-bottom: 1px solid var(--ink); padding-bottom: 3px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .hero-cta-link:hover { color: var(--ink-muted); border-color: var(--ink-muted); }
+  .hero-resume-btn {
+    font-size: 0.6rem; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink); text-decoration: none;
+    border: 1px solid var(--rule); padding: 0.6rem 1.4rem;
+    transition: background 0.25s, border-color 0.25s, color 0.25s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .hero-resume-btn:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .hero-right { display: flex; align-items: flex-end; justify-content: flex-end; padding-bottom: 6rem; position: relative; }
+  .hero-issue {
+    writing-mode: vertical-rl; font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--rule); position: absolute; right: 0; bottom: 8rem;
+    opacity:0; animation: up 0.8s ease 2.1s forwards;
+  }
+  .scroll-ind {
+    position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    opacity:0; animation: up 0.8s ease 2.3s forwards;
+  }
+  .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--ink), transparent); animation: pulse 2s ease infinite; }
+  .scroll-lbl { font-size: 0.5rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-muted); }
+  @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+  /* ── Skills Band ────────────────────── */
+  #skills {
+    background: var(--warm-white);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    display: grid; grid-template-columns: repeat(4, 1fr);
+  }
+  .skill-col { padding: 3.5rem 3rem; border-right: 1px solid var(--rule); }
+  .skill-col:last-child { border-right: none; }
+  .skill-col-label { font-size: 0.5rem; font-weight: 600; letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; display: block; }
+  .skill-list { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+  .skill-list li { font-size: 0.75rem; font-weight: 300; color: var(--ink-soft); line-height: 1.4; }
+
+  /* ── Work Heading ───────────────────── */
+  .work-head {
+    padding: 7rem 4rem 5rem; border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .work-head-titles { display: flex; flex-direction: column; line-height: 1; }
+  .wh-script { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(2.5rem, 5vw, 4.5rem); color: var(--ink-muted); }
+  .wh-sans { font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: -0.01em; text-transform: uppercase; font-size: clamp(3.5rem, 7vw, 7rem); color: var(--ink); }
+  .work-head-meta { font-size: 0.6rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-muted); text-align: right; line-height: 2; }
+
+  /* ── Project Grid ───────────────────── */
+  .project-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* Each card */
+  .pc {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    overflow: hidden;
+    height: 60vh;
+    min-height: 400px;
+    cursor: none;
+  }
+
+  /* Featured card spans full width, taller */
+  .pc.featured { grid-column: span 2; height: 70vh; min-height: 500px; }
+
+  /* ── Background image ── */
+  .pc-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+    will-change: transform;
+  }
+  .pc:hover .pc-bg { transform: scale(1.04); }
+
+  /* Placeholder dark color per project — remove once real photo added */
+  .pc-bg.bg-expedition { background-color: #0c1018; }
+  .pc-bg.bg-initium    { background-color: #180f05; }
+  .pc-bg.bg-launch     { background-color: #06091a; }
+  .pc-bg.bg-glider     { background-color: #081410; }
+  .pc-bg.bg-motif      { background-color: #120d08; }
+
+  /* ── Overlay ── */
+  /* At rest: subtle bottom vignette only, so photo reads clearly */
+  .pc-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(8,7,6,0.55) 0%,
+      rgba(8,7,6,0.0) 50%
+    );
+    transition: background 0.5s ease;
+    z-index: 1;
+  }
+  /* On hover: much darker so text is legible */
+  .pc:hover .pc-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(8,7,6,0.88) 0%,
+      rgba(8,7,6,0.55) 40%,
+      rgba(8,7,6,0.25) 100%
+    );
+  }
+
+  /* ── Resting label (always visible, bottom-left) ── */
+  .pc-rest {
+    position: absolute; bottom: 2.5rem; left: 3rem;
+    z-index: 2;
+    display: flex; flex-direction: column; gap: 0.3rem;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .pc:hover .pc-rest { opacity: 0; transform: translateY(6px); }
+
+  .pc-rest-num {
+    font-size: 0.52rem; font-weight: 500; letter-spacing: 0.3em;
+    text-transform: uppercase; color: rgba(250,248,244,0.5);
+  }
+  .pc-rest-title {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
+    font-size: clamp(1.8rem, 3vw, 3rem); color: var(--cream); line-height: 1.05;
+  }
+  .pc-rest-sub {
+    font-size: 0.55rem; font-weight: 500; letter-spacing: 0.22em;
+    text-transform: uppercase; color: rgba(250,248,244,0.55);
+  }
+
+  /* ── Hover content (hidden at rest, reveals on hover) ── */
+  .pc-hover {
+    position: absolute; inset: 0;
+    z-index: 2;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 3rem;
+    opacity: 0; transform: translateY(12px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+  .pc:hover .pc-hover { opacity: 1; transform: translateY(0); }
+
+  .pc-hover-num {
+    font-size: 0.5rem; font-weight: 500; letter-spacing: 0.35em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 0.8rem;
+  }
+  .pc-hover-title {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
+    font-size: clamp(2rem, 3.5vw, 3.5rem); color: var(--cream);
+    line-height: 1.05; margin-bottom: 0.4rem;
+  }
+  .pc-hover-sub {
+    font-size: 0.58rem; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: rgba(250,248,244,0.6);
+    margin-bottom: 1.5rem;
+  }
+  .pc-rule { width: 36px; height: 1px; background: var(--gold); margin-bottom: 1.5rem; }
+  .pc-hover-desc {
+    font-size: clamp(0.75rem, 1vw, 0.85rem); line-height: 1.8;
+    color: rgba(250,248,244,0.75); max-width: 520px; margin-bottom: 2rem;
+  }
+  .pc-hover-desc strong { font-weight: 500; color: var(--cream); }
+  .pc-hover-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .pc-hover-tags .tag {
+    font-size: 0.45rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+    border: 1px solid rgba(250,248,244,0.25); padding: 3px 10px;
+    color: rgba(250,248,244,0.55);
+  }
+  .pc-cta {
+    font-size: 0.58rem; font-weight: 600; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--cream);
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .pc-cta::after { content: '→'; transition: transform 0.25s ease; }
+  .pc:hover .pc-cta::after { transform: translateX(5px); }
+
+  /* Featured hover layout — side by side */
+  .pc.featured .pc-hover {
+    flex-direction: row; align-items: flex-end; gap: 5rem;
+  }
+  .pc.featured .pc-hover-left { flex: 1; display: flex; flex-direction: column; }
+  .pc.featured .pc-hover-right {
+    flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+  .stat { display: flex; flex-direction: column; gap: 0.25rem; }
+  .stat-val { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.4rem, 2.2vw, 2rem); color: var(--cream); line-height: 1; }
+  .stat-lbl { font-size: 0.45rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(250,248,244,0.4); }
+  .pc-hover-right-desc { font-size: clamp(0.72rem, 0.9vw, 0.82rem); line-height: 1.8; color: rgba(250,248,244,0.6); }
+
+  /* ── Leadership Section ─────────────── */
+  #leadership { background: #ECEAE4; color: var(--ink); }
+  .lead-head { padding: 7rem 4rem 5rem; border-bottom: 1px solid #D8D4CC; display: flex; justify-content: space-between; align-items: flex-end; }
+  .lead-head .wh-script { color: var(--ink-muted); }
+  .lead-head .wh-sans   { color: var(--ink); }
+  .lead-head .work-head-meta { color: var(--ink-muted); }
+  .lead-row { display: grid; grid-template-columns: 1fr 2fr; gap: 6rem; padding: 5rem 4rem; border-bottom: 1px solid #D8D4CC; transition: background 0.35s ease; }
+  .lead-row:last-child { border-bottom: none; }
+  .lead-row:hover { background: #E4E0D9; }
+  .lead-meta { display: flex; flex-direction: column; gap: 0.7rem; padding-top: 0.3rem; }
+  .lead-org { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
+  .lead-role { font-size: clamp(1rem, 1.5vw, 1.3rem); font-weight: 300; color: var(--ink-soft); line-height: 1.3; }
+  .lead-date { font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: #A8A29A; font-weight: 400; margin-top: 0.3rem; }
+  .lead-content { display: flex; flex-direction: column; gap: 1.5rem; }
+  .lead-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(1.8rem, 3vw, 2.8rem); color: var(--ink); line-height: 1.1; }
+  .lead-desc { font-size: clamp(0.8rem, 1.1vw, 0.9rem); line-height: 1.85; color: var(--ink-soft); max-width: 560px; }
+  .lead-desc strong { font-weight: 500; color: var(--ink); }
+  .lead-stats { display: flex; gap: 4rem; margin-top: 1rem; padding-top: 2rem; border-top: 1px solid #D8D4CC; }
+  .lead-stat { display: flex; flex-direction: column; gap: 0.3rem; }
+  .lead-stat-val { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.6rem, 2.5vw, 2.4rem); color: var(--ink); line-height: 1; }
+  .lead-stat-lbl { font-size: 0.5rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-muted); }
+
+  /* ── Flip card ──────────────────────── */
+  .flip-wrap {
+    display: block;
+    position: relative;
+    overflow: visible;
+    z-index: 2;
+  }
+  .flip-inner {
+    position: relative;
+    width: 100%;
+  }
+  .flip-word {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-weight: 300;
+    font-size: clamp(2rem, 6vw, 9rem);
+    color: var(--ink);
+    line-height: 1.15;
+    white-space: nowrap;
+    display: block;
+    position: absolute;
+    top: 0; left: 0;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+  .flip-word.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* ── Contact ────────────────────────── */
+  #contact { background: var(--cream); padding: 10rem 4rem 0; border-top: 1px solid var(--rule); }
+  .contact-head { display: flex; flex-direction: column; line-height: 1; margin-bottom: 5rem; overflow: visible; position: relative; z-index: 1; }
+  .ch-sans { font-family: 'Montserrat', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: -0.02em; font-size: clamp(2rem, 6vw, 8rem); color: var(--ink); }
+  .ch-script { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(2rem, 6vw, 9rem); color: var(--ink); margin-top: -0.05em; }
+  .ch-sans2 { font-family: 'Montserrat', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: -0.02em; font-size: clamp(2rem, 6vw, 8rem); color: var(--ink); }
+  .contact-links-row { display: flex; gap: 6rem; align-items: flex-end; padding-bottom: 0.5rem; flex-wrap: wrap; }
+  .c-link { display: flex; flex-direction: column; gap: 0.4rem; text-decoration: none; }
+  .c-label { font-size: 0.55rem; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-muted); }
+  .c-value { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.3rem, 2.5vw, 2rem); color: var(--ink); border-bottom: 1px solid transparent; padding-bottom: 2px; display: inline-block; transition: border-color 0.25s; }
+  .c-link:hover .c-value { border-color: var(--ink); }
+  .contact-resume-btn { display: inline-flex; align-items: center; gap: 0.6rem; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); text-decoration: none; border: 1px solid var(--ink); padding: 1rem 2rem; transition: background 0.25s, color 0.25s; align-self: flex-end; margin-left: auto; }
+  .contact-resume-btn:hover { background: var(--ink); color: var(--cream); }
+  .c-rule { width: 100%; height: 1px; background: var(--rule); margin: 5rem 0 2rem; }
+  footer { padding: 0 0 3rem; display: flex; justify-content: space-between; align-items: center; }
+  .f-copy { font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rule); font-weight: 500; }
+  .f-initials { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.2rem; color: var(--rule); }
+
+  /* ── Responsive ─────────────────────── */
+
+  /* Tablet — 900px and below */
+  @media (max-width: 900px) {
+    body { cursor: auto; }
+    .cursor,.cursor-ring { display: none; }
+
+    nav { padding: 1.2rem 2rem; }
+    .nav-links { gap: 1.8rem; }
+    .nav-resume { display: none; }
+
+    /* Hero — fill the screen better on mobile */
+    #hero {
+      grid-template-columns: 1fr;
+      padding: 0 2rem;
+      min-height: 100svh;
+    }
+    .hero-left {
+      padding-top: 7rem;
+      padding-bottom: 5rem;
+      padding-right: 0;
+      justify-content: center;
+    }
+    .hero-right { display: none; }
+    /* Hide vertical text — renders as ''' on some mobile fonts */
+    .hero-issue { display: none; }
+    .scroll-ind { display: none; }
+
+    #skills { grid-template-columns: 1fr 1fr; }
+    .skill-col { border-bottom: 1px solid var(--rule); border-right: none; }
+    .skill-col:nth-child(odd) { border-right: 1px solid var(--rule); }
+    .skill-col:nth-last-child(-n+2) { border-bottom: none; }
+
+    .work-head { padding: 5rem 2rem 3rem; flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+
+    /* Cards — scroll-triggered reveal instead of hover */
+    .project-grid { grid-template-columns: 1fr; }
+    .pc.featured { grid-column: span 1; height: 65vh; }
+    .pc { height: 60vw; min-height: 300px; }
+
+    /* Hide hover content and rest label by default on mobile */
+    .pc-hover { opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .pc-rest { opacity: 1; transition: opacity 0.4s ease; }
+
+    /* When card is in view (scroll-revealed), show hover content, hide rest label */
+    .pc.in-view .pc-hover { opacity: 1; transform: translateY(0); }
+    .pc.in-view .pc-rest { opacity: 0; }
+    .pc.in-view .pc-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(8,7,6,0.88) 0%,
+        rgba(8,7,6,0.25) 45%,
+        rgba(8,7,6,0.08) 100%
+      );
+    }
+
+    .pc.featured .pc-hover { flex-direction: column; gap: 2rem; }
+    .pc-hover { padding: 2rem; }
+
+    .lead-head { padding: 5rem 2rem 3rem; flex-direction: column; gap: 1.5rem; align-items: flex-start; }
+    .lead-row { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 2rem; }
+    .lead-stats { gap: 2rem; flex-wrap: wrap; }
+
+    #contact { padding: 6rem 2rem 0; }
+    .contact-links-row { flex-direction: column; gap: 2.5rem; align-items: flex-start; }
+    .contact-resume-btn { margin-left: 0; }
+    .flip-word { white-space: normal; }
+  }
+
+  /* Mobile — 600px and below */
+  @media (max-width: 600px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.2rem; }
+    .nav-links li:nth-child(2) { display: none; } /* hide Leadership on tiny screens */
+
+    #hero { padding: 0 1.5rem; }
+    .hero-left { padding-top: 6rem; padding-bottom: 4rem; }
+    .hero-para { max-width: 100%; font-size: 0.85rem; }
+
+    #skills { grid-template-columns: 1fr; }
+    .skill-col { border-right: none; border-bottom: 1px solid var(--rule); }
+    .skill-col:last-child { border-bottom: none; }
+
+    .work-head { padding: 4rem 1.5rem 2.5rem; }
+    .wh-sans { font-size: clamp(3rem, 12vw, 5rem); }
+
+    .pc { height: 70vw; min-height: 240px; }
+    .pc.featured { height: 75vw; }
+    .pc-hover { padding: 1.5rem; }
+    .pc-hover-title { font-size: clamp(1.6rem, 6vw, 2.5rem); }
+    .pc-hover-desc { display: none; } /* hide description on very small screens, just show title+tags+cta */
+
+    .lead-head { padding: 4rem 1.5rem 2.5rem; }
+    .lead-row { padding: 2.5rem 1.5rem; }
+    .lead-stats { gap: 1.5rem; }
+    .lead-title { font-size: clamp(1.4rem, 5vw, 2rem); }
+
+    #contact { padding: 5rem 1.5rem 0; }
+    .ch-sans, .ch-sans2 { font-size: clamp(2rem, 8vw, 4rem); }
+    .flip-word { font-size: clamp(2rem, 8vw, 4rem); }
+    .contact-links-row { gap: 2rem; }
+    .c-rule { margin: 3rem 0 1.5rem; }
+  }
+
+  /* Small mobile — 400px and below */
+  @media (max-width: 400px) {
+    .hero-first { font-size: clamp(1.8rem, 8vw, 3rem); }
+    .hero-last  { font-size: clamp(3rem, 13vw, 5rem); }
+    .nav-links li:nth-child(1) { display: none; } /* hide Work too, keep Contact + GG */
+    .hero-actions { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<!-- Splash -->
+<div id="splash">
+  <div class="sp-gg">GG</div>
+  <div class="sp-name">Giovanni Luis Gyorody</div>
+</div>
+
+<div id="main">
+
+  <!-- Nav -->
+  <nav id="mainNav">
+    <a href="#" class="nav-logo">GG</a>
+    <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#leadership">Leadership</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="resume.pdf" target="_blank" class="nav-resume">Resume ↓</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Systems Engineering · Aerospace · ERAU · Class of 2028</div>
+      <div>
+        <span class="hero-first">Giovanni</span>
+        <span class="hero-last">Gyorody.</span>
+      </div>
+      <div class="hero-rule"></div>
+      <p class="hero-para">
+        I try things most people would wait years to attempt. I built <a href="expedition.html" class="hero-inline-link">Expedition<span class="link-arrow">↗</span></a> — a production-grade mobile app — having never written a line of code. I found a launch technique no other team had even considered and increased my <a href="glider.html" class="hero-inline-link">glider's<span class="link-arrow">↗</span></a> flight distance by <strong>178%</strong>. I rebuilt <a href="https://erau.shpe.org" target="_blank" rel="noopener" class="hero-inline-link">ERAU SHPE<span class="link-arrow">↗</span></a>'s corporate relations operation from the ground up and grew the pipeline <strong>50%</strong> in a single semester.<br><br>
+        Systems engineering isn't just my major, it's my way of life. I see the whole system before I touch any part of it — and the output speaks for itself.<br><br>
+        Thanks for being here. I sincerely hope what you find is worth your time.
+      </p>
+      <div class="hero-actions">
+        <a href="#work" class="hero-cta-link">View the work ↓</a>
+        <a href="resume.pdf" target="_blank" class="hero-resume-btn">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 10h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Resume
+        </a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-issue">Daytona Beach, FL · 2025–2026</div>
+    </div>
+    <div class="scroll-ind">
+      <div class="scroll-line"></div>
+      <div class="scroll-lbl">Scroll</div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <div id="skills">
+    <div class="skill-col">
+      <span class="skill-col-label">Engineering Software</span>
+      <ul class="skill-list">
+        <li>IBM DOORS</li><li>CATIA</li><li>MATLAB</li>
+        <li>Ansys</li><li>Autodesk Fusion</li><li>KiCad</li><li>Excel</li>
+      </ul>
+    </div>
+    <div class="skill-col">
+      <span class="skill-col-label">Systems Engineering</span>
+      <ul class="skill-list">
+        <li>Requirements Management</li><li>Verification &amp; Validation</li>
+        <li>Systems Integration &amp; Testing</li><li>Trade Studies</li>
+        <li>Risk Assessment</li><li>Cost Analysis</li>
+      </ul>
+    </div>
+    <div class="skill-col">
+      <span class="skill-col-label">Technical</span>
+      <ul class="skill-list">
+        <li>CFD Simulation</li><li>Structural Analysis</li>
+        <li>PCB Design</li><li>CNC Milling</li>
+        <li>Soldering</li><li>Systems Optimization</li>
+      </ul>
+    </div>
+    <div class="skill-col">
+      <span class="skill-col-label">Software &amp; Data</span>
+      <ul class="skill-list">
+        <li>React Native</li>
+        <li>JavaScript</li>
+        <li>Supabase (PostgreSQL)</li>
+        <li>Agentic Workflow Direction</li>
+        <li>MCP Orchestration</li>
+        <li>LLM Systems Development</li>
+        <li>AI-Assisted Engineering</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Work Heading -->
+  <div class="work-head" id="work">
+    <div class="work-head-titles">
+      <span class="wh-script">Selected</span>
+      <span class="wh-sans">Work</span>
+    </div>
+    <div class="work-head-meta">5 Projects · 2024–Present</div>
+  </div>
+
+  <!-- Project Grid -->
+  <div class="project-grid">
+
+    <!-- 01 Expedition — FEATURED -->
+    <!-- ADD PHOTO: set background-image on .pc-bg below -->
+    <!-- Best: dark screenshot of the app, or a moody render of the 3D world -->
+    <a class="pc featured" href="expedition.html">
+      <div class="pc-bg bg-expedition" style="background-image:url('')"></div>
+      <div class="pc-overlay"></div>
+      <!-- Resting state -->
+      <div class="pc-rest">
+        <div class="pc-rest-num">01</div>
+        <div class="pc-rest-title">Expedition</div>
+        <div class="pc-rest-sub">Sole Engineer</div>
+      </div>
+      <!-- Hover state -->
+      <div class="pc-hover">
+        <div class="pc-hover-left">
+          <div class="pc-hover-num">01 · Feb 2025 – Present</div>
+          <div class="pc-hover-title">Expedition</div>
+          <div class="pc-hover-sub">Founder &amp; Sole Engineer</div>
+          <div class="pc-rule"></div>
+          <p class="pc-hover-desc">
+            Production-grade mobile app built from zero — <strong>no prior coding experience</strong>. Owned every layer from cloud infrastructure to real-time 3D rendering engine. JWT-hardened Supabase backend, atomic operations, 100% data integrity.
+          </p>
+          <div class="pc-hover-tags">
+            <span class="tag">React Native</span><span class="tag">Supabase</span>
+            <span class="tag">Three.js</span><span class="tag">PostgreSQL</span>
+          </div>
+          <div class="pc-cta">View Project</div>
+        </div>
+        <div class="pc-hover-right">
+          <div class="stat-row">
+            <div class="stat"><span class="stat-val">24</span><span class="stat-lbl">Days to ship</span></div>
+            <div class="stat"><span class="stat-val">0</span><span class="stat-lbl">Prior coding exp.</span></div>
+            <div class="stat"><span class="stat-val">100%</span><span class="stat-lbl">Data integrity</span></div>
+            <div class="stat"><span class="stat-val">Full</span><span class="stat-lbl">Stack ownership</span></div>
+          </div>
+          <p class="pc-hover-right-desc">Squad-based commitment architecture. Every habit moves your orb. Every stumble sets the whole squad back. The campfire only lights when everyone arrives.</p>
+        </div>
+      </div>
+    </a>
+
+    <!-- 02 Project Initium -->
+    <!-- ADD PHOTO: CATIA render, CFD visualization, or photo of manufactured body -->
+    <a class="pc" href="initium.html">
+      <div class="pc-bg bg-initium" style="background-image:url('')"></div>
+      <div class="pc-overlay"></div>
+      <div class="pc-rest">
+        <div class="pc-rest-num">02</div>
+        <div class="pc-rest-title">Project Initium</div>
+        <div class="pc-rest-sub">Pulse Jet Design</div>
+      </div>
+      <div class="pc-hover">
+        <div class="pc-hover-num">02 · Sep 2024 – Present</div>
+        <div class="pc-hover-title">Project Initium</div>
+        <div class="pc-hover-sub">Pulse Jet Design &amp; Production</div>
+        <div class="pc-rule"></div>
+        <p class="pc-hover-desc">Trade studies on combustion chamber volume, fuel flow rates, and resonance frequencies. Full body designed in <strong>CATIA</strong> with CFD simulations. Full body manufactured — systems integration in progress.</p>
+        <div class="pc-hover-tags">
+          <span class="tag">CATIA</span><span class="tag">CFD</span>
+          <span class="tag">Propulsion</span><span class="tag">Systems Integration</span>
+        </div>
+        <div class="pc-cta">View Project</div>
+      </div>
+    </a>
+
+    <!-- 03 Launch Vehicle -->
+    <!-- ADD PHOTO: trajectory diagram, vehicle sketch, or presentation slide -->
+    <a class="pc" href="launch.html">
+      <div class="pc-bg bg-launch" style="background-image:url('')"></div>
+      <div class="pc-overlay"></div>
+      <div class="pc-rest">
+        <div class="pc-rest-num">03</div>
+        <div class="pc-rest-title">Launch Vehicle</div>
+        <div class="pc-rest-sub">Team Lead</div>
+      </div>
+      <div class="pc-hover">
+        <div class="pc-hover-num">03 · Sep – Nov 2024</div>
+        <div class="pc-hover-title">Launch Vehicle</div>
+        <div class="pc-hover-sub">Team Lead · 3-Stage · 134 ft</div>
+        <div class="pc-rule"></div>
+        <p class="pc-hover-desc">Led a team of four through full conceptual design of a 3-stage, 134 ft vehicle delivering <strong>5,000 lbs to LEO</strong>. Total vehicle cost: <strong>$23.87M</strong> — $4,773/lb through iterative MATLAB optimization.</p>
+        <div class="pc-hover-tags">
+          <span class="tag">MATLAB</span><span class="tag">Team Lead</span>
+          <span class="tag">Trajectory Analysis</span><span class="tag">Cost Analysis</span>
+        </div>
+        <div class="pc-cta">View Project</div>
+      </div>
+    </a>
+
+    <!-- 04 Glider -->
+    <!-- ADD PHOTO: glider in flight, at competition, or the Excel analysis -->
+    <a class="pc" href="glider.html">
+      <div class="pc-bg bg-glider" style="background-image:url('')"></div>
+      <div class="pc-overlay"></div>
+      <div class="pc-rest">
+        <div class="pc-rest-num">04</div>
+        <div class="pc-rest-title">Glider Competition</div>
+        <div class="pc-rest-sub">1st Place</div>
+      </div>
+      <div class="pc-hover">
+        <div class="pc-hover-num">04 · Nov – Dec 2024</div>
+        <div class="pc-hover-title">Glider Competition</div>
+        <div class="pc-hover-sub">1st Place · 178% Distance Increase</div>
+        <div class="pc-rule"></div>
+        <p class="pc-hover-desc">Identified a spin-release launch technique overlooked by every competing team. Increased flight distance <strong>178%</strong> and secured 1st place despite flying a non-optimal airframe.</p>
+        <div class="pc-hover-tags">
+          <span class="tag">Aerodynamics</span><span class="tag">Excel</span><span class="tag">1st Place</span>
+        </div>
+        <div class="pc-cta">View Project</div>
+      </div>
+    </a>
+
+    <!-- 05 Motif 65 -->
+    <!-- ADD PHOTO: clean photo of the finished keyboard on a dark surface -->
+    <a class="pc" href="motif.html">
+      <div class="pc-bg bg-motif" style="background-image:url('')"></div>
+      <div class="pc-overlay"></div>
+      <div class="pc-rest">
+        <div class="pc-rest-num">05</div>
+        <div class="pc-rest-title">Motif 65</div>
+        <div class="pc-rest-sub">Sole Designer</div>
+      </div>
+      <div class="pc-hover">
+        <div class="pc-hover-num">05 · May – Aug 2024</div>
+        <div class="pc-hover-title">Motif 65</div>
+        <div class="pc-hover-sub">Mechanical Keyboard · PCB Design</div>
+        <div class="pc-rule"></div>
+        <p class="pc-hover-desc">End-to-end PCB design in KiCad, premium top-mount architecture, Fusion 360 pressure simulation. Resolved tolerance failures across three manufacturer iterations and <strong>commercially launched</strong> the product.</p>
+        <div class="pc-hover-tags">
+          <span class="tag">KiCad</span><span class="tag">Fusion 360</span>
+          <span class="tag">CNC Milling</span><span class="tag">PCB Design</span>
+        </div>
+        <div class="pc-cta">View Project</div>
+      </div>
+    </a>
+
+  </div><!-- /project-grid -->
+
+  <!-- Leadership -->
+  <section id="leadership">
+    <div class="lead-head">
+      <div class="work-head-titles">
+        <span class="wh-script">Leadership &amp;</span>
+        <span class="wh-sans">Experience</span>
+      </div>
+      <div class="work-head-meta">2024 – Present</div>
+    </div>
+    <div class="lead-rows">
+      <div class="lead-row">
+        <div class="lead-meta">
+          <div class="lead-org">SHPE</div>
+          <div class="lead-role">Corporate Relations Chairman</div>
+          <div class="lead-date">Aug 2024 – Present</div>
+        </div>
+        <div class="lead-content">
+          <h4 class="lead-title"><a href="shpe.html" style="color:inherit;text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:2px;transition:border-color 0.2s;display:inline-flex;align-items:baseline;gap:0.2em;">Permanence Over Personality<span class="link-arrow">↗</span></a></h4>
+          <p class="lead-desc">Built and led a two-director, two-subcommittee organization responsible for all corporate pipeline development, relationship management, and professional programming. Grew the chapter's corporate contacts list <strong>50% in a single semester</strong> through structured warm and cold outreach. Produced a campus-wide event with 100+ attendees to support member travel to the SHPE National Convention.</p>
+          <div class="lead-stats">
+            <div class="lead-stat"><span class="lead-stat-val">50%</span><span class="lead-stat-lbl">Pipeline growth in one semester</span></div>
+            <div class="lead-stat"><span class="lead-stat-val">100+</span><span class="lead-stat-lbl">Event attendees</span></div>
+            <div class="lead-stat"><span class="lead-stat-val">2</span><span class="lead-stat-lbl">National Conventions attended</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="lead-row">
+        <div class="lead-meta">
+          <div class="lead-org">LongHorn Steakhouse</div>
+          <div class="lead-role">Line Cook</div>
+          <div class="lead-date">Jul 2025 – Present</div>
+        </div>
+        <div class="lead-content">
+          <h4 class="lead-title">Execution Under Pressure</h4>
+          <p class="lead-desc">Management-recognized for precision and execution under pressure. Optimized fire times to maximize throughput and table turnover — the same systems thinking applied to a kitchen line.</p>
+        </div>
+      </div>
+
+      <div class="lead-row">
+        <div class="lead-meta">
+          <div class="lead-org">America Reads · America Writes</div>
+          <div class="lead-role">Federal Work-Study Tutor</div>
+          <div class="lead-date">Nov 2024 – Present</div>
+        </div>
+        <div class="lead-content">
+          <h4 class="lead-title">Teaching the Basics to Those Who Need It Most</h4>
+          <p class="lead-desc">Federal work-study program tutoring elementary school students at nearby Title I schools in reading, writing, and core coursework. Working one-on-one and in small groups to build foundational skills in students who need the most support — applying the same clarity and patience to explaining an idea to a 7-year-old that goes into explaining a system to an engineer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <h3 class="contact-head">
+      <span class="ch-sans">Currently seeking</span>
+      <span class="flip-wrap">
+        <span class="flip-inner" id="flipInner">
+          <span class="flip-word">Systems Engineering Internships</span>
+          <span class="flip-word">AI Engineering Internships</span>
+          <span class="flip-word">Defense Tech Internships</span>
+          <span class="flip-word">Software Engineering Internships</span>
+          <span class="flip-word">Systems Integration Internships</span>
+          <span class="flip-word">Mechanical Engineering Internships</span>
+          <span class="flip-word">Agentic AI Internships</span>
+          <span class="flip-word">Test &amp; Evaluation Internships</span>
+          <span class="flip-word">Autonomy &amp; Robotics Internships</span>
+          <span class="flip-word">Forward Deployed Engineering Internships</span>
+          <span class="flip-word">AI Research Internships</span>
+        </span>
+      </span>
+      <span class="ch-sans2">Summer 2026.</span>
+    </h3>
+    <div class="contact-links-row">
+      <a href="mailto:giovanni@gyorody.com" class="c-link">
+        <span class="c-label">Email</span>
+        <span class="c-value">giovanni@gyorody.com</span>
+      </a>
+      <a href="https://linkedin.com/in/giovanni-luis-gyorody" target="_blank" rel="noopener" class="c-link">
+        <span class="c-label">LinkedIn</span>
+        <span class="c-value">Giovanni Gyorody</span>
+      </a>
+      <a href="resume.pdf" target="_blank" class="contact-resume-btn">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 10h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download Resume
+      </a>
+    </div>
+    <div class="c-rule"></div>
+    <footer>
+      <div class="f-copy">© 2026 Giovanni Gyorody</div>
+      <div class="f-initials">GG</div>
+    </footer>
+  </section>
+
+</div>
+
+<script>
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('splash').classList.add('gone');
+      document.getElementById('main').classList.add('show');
+      document.getElementById('mainNav').classList.add('nav-ready');
+    }, 1950);
+  });
+
+  // Nav border on scroll
+  const mainNav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    mainNav.classList.toggle('nav-scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  const cur = document.getElementById('cur');
+  const ring = document.getElementById('ring');
+  let mx=0, my=0, rx=0, ry=0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cur.style.left = mx+'px'; cur.style.top = my+'px';
+  });
+  (function tick() {
+    rx += (mx-rx)*0.12; ry += (my-ry)*0.12;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(tick);
+  })();
+
+  // Light cursor over dark project cards
+  document.querySelectorAll('.pc').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cur.classList.add('light'); ring.classList.add('light');
+      ring.style.width = ring.style.height = '52px'; ring.style.opacity = '0.3';
+    });
+    el.addEventListener('mouseleave', () => {
+      cur.classList.remove('light'); ring.classList.remove('light');
+      ring.style.width = ring.style.height = '32px'; ring.style.opacity = '0.4';
+    });
+  });
+
+  // Flip card — crossfade, no clipping
+  const flipInner = document.getElementById('flipInner');
+  const words = Array.from(flipInner.querySelectorAll('.flip-word'));
+  const flipWrap = document.querySelector('.flip-wrap');
+  let current = 0;
+  let flipTimer = null;
+
+  function setFlipHeight() {
+    // Briefly make first word visible to measure it
+    words[0].style.opacity = '1';
+    words[0].style.transform = 'translateY(0)';
+    const h = words[0].offsetHeight;
+    words[0].style.opacity = '';
+    words[0].style.transform = '';
+    flipWrap.style.height = h + 'px';
+  }
+
+  // Set first word active immediately
+  words[0].classList.add('active');
+
+  function nextFlip() {
+    words[current].classList.remove('active');
+    current = (current + 1) % words.length;
+    words[current].classList.add('active');
+  }
+
+  function startFlip() {
+    if (!flipTimer) flipTimer = setInterval(nextFlip, 1400);
+  }
+
+  // Measure after fonts load
+  document.fonts.ready.then(() => {
+    setFlipHeight();
+    window.addEventListener('resize', setFlipHeight);
+  });
+
+  // Pause when out of view
+  const contactObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting && flipTimer) {
+        clearInterval(flipTimer); flipTimer = null;
+      } else if (e.isIntersecting && !flipTimer) {
+        flipTimer = setInterval(nextFlip, 1400);
+      }
+    });
+  }, { threshold: 0 });
+  contactObs.observe(document.getElementById('contact'));
+
+  // Mobile scroll-triggered card reveal
+  if (window.innerWidth <= 900) {
+    const mobileCardObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+        } else {
+          e.target.classList.remove('in-view');
+        }
+      });
+    }, { threshold: 0.4 });
+    document.querySelectorAll('.pc').forEach(c => mobileCardObs.observe(c));
+  }
+
+  // Start after splash
+  setTimeout(startFlip, 2100);
+
+  document.querySelectorAll('a:not(.pc)').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cur.style.transform = 'translate(-50%,-50%) scale(2.2)';
+      ring.style.width = ring.style.height = '48px'; ring.style.opacity = '0.18';
+    });
+    el.addEventListener('mouseleave', () => {
+      cur.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.width = ring.style.height = '32px'; ring.style.opacity = '0.4';
+    });
+  });
+</script>
+</body>
+</html>

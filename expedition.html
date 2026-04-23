@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expedition — Giovanni Gyorody</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF8F4; --warm-white: #F5F2EC; --ink: #0F0E0C;
+    --ink-soft: #2A2825; --ink-muted: #6B6560; --rule: #D4CFC7; --gold: #B8A98A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--ink); font-family: 'Montserrat', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; }
+
+  .cursor { position: fixed; width: 8px; height: 8px; background: var(--ink); border-radius: 50%; pointer-events: none; z-index: 9999; transition: transform 0.15s ease; transform: translate(-50%,-50%); }
+  .cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid var(--ink); border-radius: 50%; pointer-events: none; z-index: 9998; transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease; transform: translate(-50%,-50%); opacity: 0.4; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; }
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: 1.5rem; color: var(--ink); text-decoration: none; }
+  .nav-back { font-size: 0.6rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-muted); text-decoration: none; transition: color 0.25s; display: flex; align-items: center; gap: 0.4rem; }
+  .nav-back:hover { color: var(--ink); }
+
+  /* Hero */
+  .proj-hero {
+    min-height: 80vh;
+    /* ADD PHOTO: background-image: url('img/expedition.jpg'); */
+    background-color: #0c1018;
+    background-size: cover; background-position: center;
+    position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 5rem 4rem;
+  }
+  .proj-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, rgba(8,7,6,0.85) 0%, rgba(8,7,6,0.3) 60%, rgba(8,7,6,0.1) 100%); }
+  .proj-hero-content { position: relative; z-index: 1; max-width: 800px; }
+  .proj-num { font-size: 0.52rem; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+  .proj-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(3rem, 7vw, 7rem); color: var(--cream); line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .proj-subtitle { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(250,248,244,0.55); margin-bottom: 2rem; }
+  .proj-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .proj-tags .tag { font-size: 0.45rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(250,248,244,0.25); padding: 4px 12px; color: rgba(250,248,244,0.55); }
+
+  /* Body */
+  .proj-body { max-width: 1200px; margin: 0 auto; padding: 6rem 4rem; }
+
+  .proj-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; padding-bottom: 5rem; border-bottom: 1px solid var(--rule); margin-bottom: 5rem; }
+  .proj-intro-left {}
+  .proj-intro-right {}
+
+  .proj-section-label { font-size: 0.5rem; font-weight: 600; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; display: block; }
+  .proj-section-heading { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(1.8rem, 3vw, 2.8rem); color: var(--ink); line-height: 1.1; margin-bottom: 2rem; }
+  .proj-body-text { font-size: clamp(0.82rem, 1.1vw, 0.92rem); line-height: 1.9; color: var(--ink-soft); }
+  .proj-body-text strong { font-weight: 500; color: var(--ink); }
+  .proj-body-text p + p { margin-top: 1.2rem; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+  .stat-item { display: flex; flex-direction: column; gap: 0.4rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
+  .stat-item-val { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(2rem, 3vw, 3rem); color: var(--ink); line-height: 1; }
+  .stat-item-lbl { font-size: 0.48rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-muted); }
+
+  .proj-section { margin-bottom: 5rem; padding-bottom: 5rem; border-bottom: 1px solid var(--rule); }
+  .proj-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+  /* Image placeholder */
+  .proj-img-placeholder {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--warm-white); border: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: center;
+    margin: 3rem 0;
+  }
+  .proj-img-placeholder span { font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--rule); }
+
+  /* Nav between projects */
+  .proj-nav { border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr 1fr; }
+  .proj-nav-item { padding: 3rem 4rem; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 0.5rem; transition: background 0.25s; }
+  .proj-nav-item:hover { background: var(--warm-white); }
+  .proj-nav-item + .proj-nav-item { border-left: 1px solid var(--rule); }
+  .proj-nav-label { font-size: 0.5rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-muted); }
+  .proj-nav-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.5rem, 2.5vw, 2.2rem); color: var(--ink); }
+
+  @media (max-width: 900px) {
+    body { cursor: auto; }
+    .cursor,.cursor-ring { display: none; }
+    nav { padding: 1.5rem; }
+    .proj-hero { padding: 3rem 1.5rem; }
+    .proj-body { padding: 4rem 1.5rem; }
+    .proj-intro { grid-template-columns: 1fr; gap: 3rem; }
+    .proj-nav-item { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">GG</a>
+  <a href="index.html#work" class="nav-back">← All Projects</a>
+</nav>
+
+<div class="proj-hero">
+  <!-- ADD PHOTO: add style="background-image:url('img/expedition.jpg')" to .proj-hero above -->
+  <div class="proj-hero-content">
+    <div class="proj-num">01 · Feb 2025 – Present</div>
+    <div class="proj-title">Expedition</div>
+    <div class="proj-subtitle">Founder &amp; Sole Engineer</div>
+    <div class="proj-tags">
+      <span class="tag">React Native</span><span class="tag">Supabase</span>
+      <span class="tag">Three.js</span><span class="tag">PostgreSQL</span><span class="tag">Mobile</span>
+    </div>
+  </div>
+</div>
+
+<div class="proj-body">
+
+  <div class="proj-intro">
+    <div class="proj-intro-left">
+      <span class="proj-section-label">Overview</span>
+      <div class="proj-section-heading">Production-grade mobile app.<br>Zero prior experience.</div>
+      <div class="proj-body-text">
+        <p>Expedition is a squad-based commitment architecture mobile application. I founded and built it as the sole technical and product decision-maker — architecting the full system from zero with no prior coding experience, owning every layer from cloud infrastructure to 3D rendering engine.</p>
+        <p>The product operates on a core mechanical principle: collective consequence. Every habit completed moves your avatar forward on a shared trail. Every stumble extends the squad's biome completion time. The campfire only lights when everyone arrives.</p>
+      </div>
+    </div>
+    <div class="proj-intro-right">
+      <div class="stat-grid">
+        <div class="stat-item"><span class="stat-item-val">24</span><span class="stat-item-lbl">Days to ship v1</span></div>
+        <div class="stat-item"><span class="stat-item-val">0</span><span class="stat-item-lbl">Prior coding experience</span></div>
+        <div class="stat-item"><span class="stat-item-val">100%</span><span class="stat-item-lbl">Data integrity across all mutation paths</span></div>
+        <div class="stat-item"><span class="stat-item-val">Full</span><span class="stat-item-lbl">Stack ownership — infra to rendering</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proj-section">
+    <span class="proj-section-label">The Problem</span>
+    <div class="proj-section-heading">Accountability without consequence<br>is just encouragement.</div>
+    <div class="proj-body-text">
+      <p>Existing habit apps are built around the individual. Streaks, check-ins, reminders — all private, all personal, all consequence-free. The result is that quitting is costless. No one knows. Nothing changes.</p>
+      <p>Expedition is built on the opposite premise: <strong>structural, social accountability made visual and consequential.</strong> Your squad sees everything. Your stumbles affect everyone. The world your group shares reflects the truth of how everyone is actually doing.</p>
+    </div>
+  </div>
+
+  <div class="proj-section">
+    <span class="proj-section-label">Technical Execution</span>
+    <div class="proj-section-heading">Every layer, from scratch.</div>
+    <div class="proj-body-text">
+      <p><strong>3D Rendering Pipeline:</strong> Identified and resolved critical performance bottlenecks in a real-time 3D rendering pipeline on mobile hardware. Hand-tuned geometry, occlusion culling, and per-frame timing to achieve stable output under strict hardware constraints with no postprocessing layer available.</p>
+      <p><strong>Backend Architecture:</strong> Architected a hardened Supabase backend to stringent security standards — implementing JWT identity verification and rate limiting to prevent abuse. Engineered idempotency guards and atomic database operations across all mutation paths to ensure 100% data integrity.</p>
+      <p><strong>Product Architecture:</strong> Sole technical and product decision-maker across the entire system. Every UX decision, every infrastructure call, every performance trade-off — made and executed alone.</p>
+    </div>
+    <!-- ADD SCREENSHOTS: replace placeholder with <img src="img/expedition-screen.jpg" style="width:100%;"> -->
+    <div class="proj-img-placeholder"><span>App screenshot — add img/expedition-screen.jpg</span></div>
+  </div>
+
+</div>
+
+<div class="proj-nav">
+  <a href="index.html" class="proj-nav-item">
+    <span class="proj-nav-label">← Back</span>
+    <span class="proj-nav-title">All Projects</span>
+  </a>
+  <a href="initium.html" class="proj-nav-item" style="text-align:right">
+    <span class="proj-nav-label">Next →</span>
+    <span class="proj-nav-title">Project Initium</span>
+  </a>
+</div>
+
+<script>
+  const cur = document.getElementById('cur');
+  const ring = document.getElementById('ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px'; });
+  (function tick(){ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(tick); })();
+  document.querySelectorAll('a').forEach(el => {
+    el.addEventListener('mouseenter', () => { cur.style.transform='translate(-50%,-50%) scale(2.2)'; ring.style.width=ring.style.height='48px'; ring.style.opacity='0.18'; });
+    el.addEventListener('mouseleave', () => { cur.style.transform='translate(-50%,-50%) scale(1)'; ring.style.width=ring.style.height='32px'; ring.style.opacity='0.4'; });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHPE — Giovanni Gyorody</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF8F4; --warm-white: #F5F2EC; --ink: #0F0E0C;
+    --ink-soft: #2A2825; --ink-muted: #6B6560; --rule: #D4CFC7; --gold: #B8A98A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--ink); font-family: 'Montserrat', sans-serif; font-weight: 300; overflow-x: hidden; cursor: none; }
+
+  .cursor { position: fixed; width: 8px; height: 8px; background: var(--ink); border-radius: 50%; pointer-events: none; z-index: 9999; transition: transform 0.15s ease; transform: translate(-50%,-50%); }
+  .cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid var(--ink); border-radius: 50%; pointer-events: none; z-index: 9998; transition: width 0.3s, height 0.3s, opacity 0.3s; transform: translate(-50%,-50%); opacity: 0.4; }
+
+  /* Nav */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; padding: 1.5rem 4rem; display: flex; justify-content: space-between; align-items: center; background: rgba(250,248,244,0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--rule); }
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: 1.5rem; color: var(--ink); text-decoration: none; }
+  .nav-back { font-size: 0.6rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-muted); text-decoration: none; transition: color 0.25s; }
+  .nav-back:hover { color: var(--ink); }
+
+  /* Hero */
+  .proj-hero {
+    min-height: 80vh;
+    background-color: #0f0e0c;
+    background-size: cover; background-position: center;
+    position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 5rem 4rem;
+  }
+  .proj-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(to top, rgba(8,7,6,0.88) 0%, rgba(8,7,6,0.35) 55%, rgba(8,7,6,0.1) 100%); }
+  .proj-hero-content { position: relative; z-index: 1; max-width: 900px; }
+  .proj-num { font-size: 0.52rem; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+  .proj-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(3rem, 7vw, 7rem); color: var(--cream); line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .proj-subtitle { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(250,248,244,0.55); margin-bottom: 2rem; }
+  .proj-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .tag { font-size: 0.45rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid rgba(250,248,244,0.25); padding: 4px 12px; color: rgba(250,248,244,0.55); }
+
+  /* Body */
+  .proj-body { max-width: 1100px; margin: 0 auto; padding: 6rem 4rem; }
+
+  /* Intro grid */
+  .proj-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; padding-bottom: 5rem; border-bottom: 1px solid var(--rule); margin-bottom: 5rem; }
+
+  .proj-section-label { font-size: 0.5rem; font-weight: 600; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; display: block; }
+  .proj-section-heading { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(1.8rem, 3vw, 2.8rem); color: var(--ink); line-height: 1.1; margin-bottom: 2rem; }
+  .proj-body-text { font-size: clamp(0.82rem, 1.1vw, 0.92rem); line-height: 1.9; color: var(--ink-soft); }
+  .proj-body-text strong { font-weight: 500; color: var(--ink); }
+  .proj-body-text p + p { margin-top: 1.2rem; }
+
+  /* Stats */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .stat-item { display: flex; flex-direction: column; gap: 0.4rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
+  .stat-item-val { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(2rem, 3vw, 3rem); color: var(--ink); line-height: 1; }
+  .stat-item-lbl { font-size: 0.48rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-muted); }
+
+  /* Timeline */
+  .timeline { margin-bottom: 5rem; padding-bottom: 5rem; border-bottom: 1px solid var(--rule); }
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 4rem;
+    padding: 3.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .timeline-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .timeline-left { display: flex; flex-direction: column; gap: 0.5rem; padding-top: 0.2rem; }
+  .timeline-date { font-size: 0.52rem; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); }
+  .timeline-loc { font-size: 0.6rem; font-weight: 300; color: var(--ink-muted); line-height: 1.5; margin-top: 0.3rem; }
+  .timeline-role { font-size: 0.55rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rule); margin-top: 0.5rem; }
+  .timeline-right {}
+  .timeline-heading { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(1.6rem, 2.8vw, 2.4rem); color: var(--ink); line-height: 1.1; margin-bottom: 1.5rem; }
+  .timeline-body { font-size: clamp(0.8rem, 1vw, 0.9rem); line-height: 1.9; color: var(--ink-soft); }
+  .timeline-body strong { font-weight: 500; color: var(--ink); }
+  .timeline-body p + p { margin-top: 1rem; }
+
+  /* Convention cards */
+  .convention-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 2rem; }
+  .convention-card { background: var(--cream); padding: 2.5rem; display: flex; flex-direction: column; gap: 0.6rem; transition: background 0.3s ease; }
+  .convention-card:hover { background: var(--warm-white); }
+  .cc-num { font-size: 0.48rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
+  .cc-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(1.4rem, 2.2vw, 2rem); color: var(--ink); line-height: 1.1; }
+  .cc-date { font-size: 0.5rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-muted); margin-top: 0.3rem; }
+
+  /* Proj section */
+  .proj-section { margin-bottom: 5rem; padding-bottom: 5rem; border-bottom: 1px solid var(--rule); }
+  .proj-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+  /* Image placeholder */
+  .proj-img-placeholder { width: 100%; aspect-ratio: 16/9; background: var(--warm-white); border: 1px solid var(--rule); display: flex; align-items: center; justify-content: center; margin: 3rem 0; }
+  .proj-img-placeholder span { font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--rule); }
+
+  /* Bottom nav */
+  .proj-nav { border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr 1fr; }
+  .proj-nav-item { padding: 3rem 4rem; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 0.5rem; transition: background 0.25s; }
+  .proj-nav-item:hover { background: var(--warm-white); }
+  .proj-nav-item + .proj-nav-item { border-left: 1px solid var(--rule); }
+  .proj-nav-label { font-size: 0.5rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-muted); }
+  .proj-nav-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(1.5rem, 2.5vw, 2.2rem); color: var(--ink); }
+
+  @media (max-width: 900px) {
+    body { cursor: auto; }
+    .cursor,.cursor-ring { display: none; }
+    nav { padding: 1.2rem 1.5rem; }
+    .proj-hero { padding: 3rem 1.5rem; min-height: 60vh; }
+    .proj-body { padding: 4rem 1.5rem; }
+    .proj-intro { grid-template-columns: 1fr; gap: 3rem; }
+    .timeline-item { grid-template-columns: 1fr; gap: 1rem; }
+    .convention-grid { grid-template-columns: 1fr; }
+    .proj-nav-item { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">GG</a>
+  <a href="index.html#leadership" class="nav-back">← Leadership</a>
+</nav>
+
+<!-- Hero -->
+<div class="proj-hero">
+  <!-- ADD PHOTO: style="background-image:url('img/shpe.jpg')" — convention floor, career fair, team photo -->
+  <div class="proj-hero-content">
+    <div class="proj-num">Leadership · Aug 2024 – Present</div>
+    <div class="proj-title">SHPE</div>
+    <div class="proj-subtitle">Permanence Over Personality</div>
+    <div class="proj-tags">
+      <span class="tag">Corporate Relations</span>
+      <span class="tag">Pipeline Development</span>
+      <span class="tag">Organizational Design</span>
+      <span class="tag">2 National Conventions</span>
+    </div>
+  </div>
+</div>
+
+<div class="proj-body">
+
+  <!-- Intro -->
+  <div class="proj-intro">
+    <div>
+      <span class="proj-section-label">Overview</span>
+      <div class="proj-section-heading">Building what<br>wasn't there yet.</div>
+      <div class="proj-body-text">
+        <p>When I joined ERAU SHPE in August 2024, corporate relations didn't have a dedicated system — the operation reset with every new chair. I came in to change that, and to make the change stick.</p>
+      </div>
+    </div>
+    <div>
+      <div class="stat-grid">
+        <div class="stat-item">
+          <span class="stat-item-val">50%</span>
+          <span class="stat-item-lbl">Corporate pipeline growth — first term, one semester</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item-val">2</span>
+          <span class="stat-item-lbl">National Conventions attended</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item-val">4</span>
+          <span class="stat-item-lbl">Roles held: Member, Fundraising Director, Corp. Relations Chairman ×2</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item-val">Apr '27</span>
+          <span class="stat-item-lbl">End of current term — full academic year to make it stick</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="proj-section">
+    <span class="proj-section-label">The Journey</span>
+
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-date">Aug 2024</div>
+          <div class="timeline-loc">Daytona Beach, FL</div>
+          <div class="timeline-role">Member</div>
+        </div>
+        <div class="timeline-right">
+          <div class="timeline-heading">First semester. Show up, earn the room.</div>
+          <div class="timeline-body">
+            <p>Joined SHPE in my first semester at ERAU as a freshman. Got involved immediately — attending events, building connections, putting in the work. By the end of the semester I had earned <strong>second most points in the entire chapter</strong>, which earned me a sponsored spot to the National Convention in Anaheim. Two months in, I was Fundraising Director.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-date">Oct 2024</div>
+          <div class="timeline-loc">Daytona Beach, FL</div>
+          <div class="timeline-role">Fundraising Director</div>
+        </div>
+        <div class="timeline-right">
+          <div class="timeline-heading">First role. First look at how the machine worked.</div>
+          <div class="timeline-body">
+            <p>Became Fundraising Director in October 2024 — two months after joining. Started understanding the chapter's inner workings and where I could contribute most. Corporate relations kept coming up as an area with room to grow, and I started thinking about what a real system there could look like.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-date">Oct 30 – Nov 2, 2024</div>
+          <div class="timeline-loc">Anaheim, CA</div>
+          <div class="timeline-role">National Convention #1</div>
+        </div>
+        <div class="timeline-right">
+          <div class="timeline-heading">Anaheim. The 50th anniversary convention.</div>
+          <div class="timeline-body">
+            <p>Attended the SHPE National Convention in Anaheim — the 50th anniversary, nearly 15,000 attendees, over 350 exhibitors. Interviewed with <strong>L3Harris, Lockheed Martin, and JHUAPL</strong> at and following the convention. Saw firsthand what a chapter with a strong corporate pipeline looks like when it shows up to a room like that. Came back with a clearer picture of what ERAU SHPE's operation could be.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-date">Jan – Apr 2025</div>
+          <div class="timeline-loc">Daytona Beach, FL</div>
+          <div class="timeline-role">Corporate Relations Chairman</div>
+        </div>
+        <div class="timeline-right">
+          <div class="timeline-heading">First term. Build the system.</div>
+          <div class="timeline-body">
+            <p>Became Corporate Relations Chairman in January 2025. The role had historically been a single person trying to do everything — outreach, events, relationship management, all at once, with nothing written down. I changed the architecture.</p>
+            <p>I established <strong>two directors and two subcommittees</strong>: one handling outreach, one handling events. Every person had a defined responsibility. The system was designed so that no single person's departure could take the operation down with them.</p>
+            <p>In one semester, the corporate contacts list grew by <strong>50%</strong>. But the more important result was structural — for the first time, there was something to hand off.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-date">Apr 2025 – Apr 2026</div>
+          <div class="timeline-loc">Daytona Beach, FL</div>
+          <div class="timeline-role">Member</div>
+        </div>
+        <div class="timeline-right">
+          <div class="timeline-heading">A step back. An ear to the ground.</div>
+          <div class="timeline-body">
+            <p>In the following academic year, internal challenges within the chapter led me to step back from an active role. I attended 3–5 chapter events across the full year.</p>
+            <p>What I didn't do was stop paying attention. I stayed connected to SHPE nationally, listened to what members, former e-board, and chapter alumni were saying, and kept building a picture of what was broken and why.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-date">Oct 29 – Nov 1, 2025</div>
+          <div class="timeline-loc">Philadelphia, PA</div>
+          <div class="timeline-role">National Convention #2</div>
+        </div>
+        <div class="timeline-right">
+          <div class="timeline-heading">Philadelphia. Still here.</div>
+          <div class="timeline-body">
+            <p>Attended the SHPE National Convention in Philadelphia during the step-back year — because my investment in SHPE was never just about the chapter. The national network, the career fair, the connections built across two conventions — those belong to the mission, not the title.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-date">Apr 2026</div>
+          <div class="timeline-loc">Daytona Beach, FL</div>
+          <div class="timeline-role">Corporate Relations Chairman</div>
+        </div>
+        <div class="timeline-right">
+          <div class="timeline-heading">Second term. Make it permanent.</div>
+          <div class="timeline-body">
+            <p>Ran for Corporate Relations Chairman again in April 2026 and won. This term runs through April 2027 — a full academic year.</p>
+            <p>The goal of the first term was to build a system. The goal of this term is different: <strong>make it impossible to undo.</strong> Documentation, succession planning, institutional memory that lives in the chapter, not in a person. The corporate relations operation should run the same way whether I'm in the chair or not.</p>
+            <p>That's what permanence over personality actually means.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /proj-body -->
+
+<div class="proj-nav">
+  <a href="index.html" class="proj-nav-item">
+    <span class="proj-nav-label">← Back</span>
+    <span class="proj-nav-title">All Work</span>
+  </a>
+  <a href="index.html#contact" class="proj-nav-item" style="text-align:right">
+    <span class="proj-nav-label">Get in touch</span>
+    <span class="proj-nav-title">Contact</span>
+  </a>
+</div>
+
+<script>
+  const cur = document.getElementById('cur');
+  const ring = document.getElementById('ring');
+  let mx=0, my=0, rx=0, ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px'; });
+  (function tick(){ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(tick); })();
+  document.querySelectorAll('a').forEach(el => {
+    el.addEventListener('mouseenter', () => { cur.style.transform='translate(-50%,-50%) scale(2.2)'; ring.style.width=ring.style.height='48px'; ring.style.opacity='0.18'; });
+    el.addEventListener('mouseleave', () => { cur.style.transform='translate(-50%,-50%) scale(1)'; ring.style.width=ring.style.height='32px'; ring.style.opacity='0.4'; });
+  });
+</script>
+</body>
+</html>
