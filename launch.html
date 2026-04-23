@@ -116,6 +116,7 @@
 
 <script>
   const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+  const navEl=document.querySelector("nav");window.addEventListener("scroll",()=>{navEl.classList.toggle("nav-scrolled",window.scrollY>40);},{passive:true});
   let mx=0,my=0,rx=0,ry=0;
   document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
   (function tick(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(tick);})();

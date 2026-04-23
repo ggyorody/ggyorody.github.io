@@ -19,7 +19,8 @@
   .cursor { position: fixed; width: 8px; height: 8px; background: var(--ink); border-radius: 50%; pointer-events: none; z-index: 9999; transition: transform 0.15s ease; transform: translate(-50%,-50%); }
   .cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid var(--ink); border-radius: 50%; pointer-events: none; z-index: 9998; transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease; transform: translate(-50%,-50%); opacity: 0.4; }
 
-  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; padding: 1.5rem 4rem; display: flex; justify-content: space-between; align-items: center; background: rgba(250,248,244,0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid transparent; transition: border-color 0.3s ease, background 0.3s ease; }
+  nav.nav-scrolled { border-bottom-color: var(--rule); background: rgba(250,248,244,0.97); }
   .nav-logo { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: 1.5rem; color: var(--ink); text-decoration: none; }
   .nav-back { font-size: 0.6rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ink-muted); text-decoration: none; transition: color 0.25s; display: flex; align-items: center; gap: 0.4rem; }
   .nav-back:hover { color: var(--ink); }
@@ -170,6 +171,7 @@
 <script>
   const cur = document.getElementById('cur');
   const ring = document.getElementById('ring');
+  const navEl=document.querySelector("nav");window.addEventListener("scroll",()=>{navEl.classList.toggle("nav-scrolled",window.scrollY>40);},{passive:true});
   let mx=0,my=0,rx=0,ry=0;
   document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px'; });
   (function tick(){ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(tick); })();

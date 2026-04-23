@@ -471,21 +471,63 @@
       padding-right: 0;
       justify-content: center;
     }
+    .hero-actions { flex-wrap: nowrap; gap: 1rem; }
     .hero-right { display: none; }
     /* Hide vertical text — renders as ''' on some mobile fonts */
     .hero-issue { display: none; }
     .scroll-ind { display: none; }
 
+    /* Skills — compact accordion on mobile */
     #skills { grid-template-columns: 1fr 1fr; }
-    .skill-col { border-bottom: 1px solid var(--rule); border-right: none; }
+    .skill-col {
+      border-bottom: 1px solid var(--rule);
+      border-right: none;
+      padding: 0;
+      cursor: pointer;
+    }
     .skill-col:nth-child(odd) { border-right: 1px solid var(--rule); }
     .skill-col:nth-last-child(-n+2) { border-bottom: none; }
+    .skill-col-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .skill-col-label::after {
+      content: '+';
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--ink-muted);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+      margin-left: 0.5rem;
+    }
+    .skill-col.open .skill-col-label::after { content: '−'; }
+    .skill-list {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+      padding: 0 1.5rem;
+    }
+    .skill-col.open .skill-list {
+      max-height: 400px;
+      padding-bottom: 1.2rem;
+    }
 
     .work-head { padding: 5rem 2rem 3rem; flex-direction: column; gap: 1.5rem; align-items: flex-start; }
 
+    /* Expedition featured card — match other cards on mobile */
+    .pc.featured { grid-column: span 1; height: 60vw; min-height: 300px; }
+    .pc.featured .pc-hover { flex-direction: column; gap: 0; padding: 2rem; }
+    .pc.featured .pc-hover-left { display: flex; flex-direction: column; }
+    .pc.featured .pc-hover-right { display: none; }
+    .stat-row { display: none; }
+
     /* Cards — scroll-triggered reveal instead of hover */
-    .project-grid { grid-template-columns: 1fr; }
-    .pc.featured { grid-column: span 1; height: 65vh; }
+    .project-grid { grid-template-columns: 1fr; gap: 2px; background: #B8B3AB; }
     .pc { height: 60vw; min-height: 300px; }
 
     /* Hide hover content and rest label by default on mobile */
@@ -508,13 +550,21 @@
     .pc-hover { padding: 2rem; }
 
     .lead-head { padding: 5rem 2rem 3rem; flex-direction: column; gap: 1.5rem; align-items: flex-start; }
-    .lead-row { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 2rem; }
-    .lead-stats { gap: 2rem; flex-wrap: wrap; }
+    .lead-row {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 3rem 2rem;
+      border-bottom: 2px solid #C8C3BB;
+    }
+    .lead-row:last-child { border-bottom: none; }
+    .lead-stats { display: none; }
 
     #contact { padding: 6rem 2rem 0; }
     .contact-links-row { flex-direction: column; gap: 2.5rem; align-items: flex-start; }
     .contact-resume-btn { margin-left: 0; }
-    .flip-word { white-space: normal; }
+    .flip-word { white-space: normal; font-size: clamp(1.4rem, 5.5vw, 2.5rem); line-height: 1.2; }
+    .flip-wrap { height: 3em; }
+    .ch-sans, .ch-sans2 { font-size: clamp(1.6rem, 6vw, 3rem); }
   }
 
   /* Mobile — 600px and below */
@@ -595,7 +645,7 @@
       </div>
       <div class="hero-rule"></div>
       <p class="hero-para">
-        I try things most people would wait years to attempt. I built <a href="expedition.html" class="hero-inline-link">Expedition<span class="link-arrow">↗</span></a> — a production-grade mobile app — having never written a line of code. I found a launch technique no other team had even considered and increased my <a href="glider.html" class="hero-inline-link">glider's<span class="link-arrow">↗</span></a> flight distance by <strong>178%</strong>. I rebuilt <a href="https://erau.shpe.org" target="_blank" rel="noopener" class="hero-inline-link">ERAU SHPE<span class="link-arrow">↗</span></a>'s corporate relations operation from the ground up and grew the pipeline <strong>50%</strong> in a single semester.<br><br>
+        I try things most people would wait years to attempt. I built <a href="expedition.html" class="hero-inline-link">Expedition<span class="link-arrow">↗</span></a> — a production-grade mobile app — having never written a line of code. I found a launch technique no other team had even considered and increased my <a href="glider.html" class="hero-inline-link">glider's<span class="link-arrow">↗</span></a> flight distance by <strong>178%</strong>. I rebuilt <a href="https://erau.shpe.org" target="_blank" rel="noopener" class="hero-inline-link">ERAU SHPE<span class="link-arrow">↗</span></a>'s corporate relations operation from the ground up and grew the pipeline <strong>50%</strong> in a single semester. And that's just the start.<br><br>
         Systems engineering isn't just my major, it's my way of life. I see the whole system before I touch any part of it — and the output speaks for itself.<br><br>
         Thanks for being here. I sincerely hope what you find is worth your time.
       </p>
@@ -974,7 +1024,11 @@
   // Measure after fonts load
   document.fonts.ready.then(() => {
     setFlipHeight();
-    window.addEventListener('resize', setFlipHeight);
+    window.addEventListener('resize', () => {
+      // Debounce resize
+      clearTimeout(window._flipResizeTimer);
+      window._flipResizeTimer = setTimeout(setFlipHeight, 100);
+    });
   });
 
   // Pause when out of view
@@ -989,6 +1043,15 @@
   }, { threshold: 0 });
   contactObs.observe(document.getElementById('contact'));
 
+  // Mobile skills accordion
+  if (window.innerWidth <= 900) {
+    document.querySelectorAll('.skill-col').forEach(col => {
+      col.addEventListener('click', () => {
+        col.classList.toggle('open');
+      });
+    });
+  }
+
   // Mobile scroll-triggered card reveal
   if (window.innerWidth <= 900) {
     const mobileCardObs = new IntersectionObserver((entries) => {
@@ -999,7 +1062,7 @@
           e.target.classList.remove('in-view');
         }
       });
-    }, { threshold: 0.4 });
+    }, { threshold: 0.5 });
     document.querySelectorAll('.pc').forEach(c => mobileCardObs.observe(c));
   }
 
