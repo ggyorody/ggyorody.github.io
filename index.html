@@ -163,13 +163,17 @@
     display: inline-flex; align-items: baseline; gap: 0.15em;
   }
   .hero-inline-link:hover { border-color: var(--ink); }
-  .link-arrow {
-    font-size: 0.7em;
-    opacity: 0.5;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+  .link-arrow-svg {
+    width: 10px; height: 10px;
     display: inline-block;
+    vertical-align: middle;
+    opacity: 0.45;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    margin-left: 0.15em;
+    flex-shrink: 0;
   }
-  .hero-inline-link:hover .link-arrow {
+  .hero-inline-link:hover .link-arrow-svg,
+  a:hover .link-arrow-svg {
     opacity: 1;
     transform: translate(1px, -1px);
   }
@@ -430,12 +434,110 @@
     pointer-events: auto;
   }
 
+  /* ── Chess Widget ───────────────────── */
+  .chess-section {
+    padding: 5rem 4rem;
+    background: var(--cream);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4rem;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.3s ease;
+  }
+  .chess-section:hover { background: var(--warm-white); }
+
+  .chess-left {}
+  .chess-eyebrow {
+    font-size: 0.5rem; font-weight: 600; letter-spacing: 0.35em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 1rem;
+  }
+  .chess-heading {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-weight: 300; font-size: clamp(1.8rem, 3vw, 3rem);
+    color: var(--ink); line-height: 1.1; margin-bottom: 0.5rem;
+  }
+  .chess-sub {
+    font-size: 0.6rem; font-weight: 500; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--ink-muted);
+    display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem;
+  }
+  .chess-sub .link-arrow-svg { opacity: 0.5; }
+  .chess-section:hover .chess-sub .link-arrow-svg { opacity: 1; transform: translate(1px,-1px); transition: all 0.2s; }
+
+  .chess-stats {
+    display: flex; gap: 3rem; margin-top: 2rem;
+  }
+  .chess-stat { display: flex; flex-direction: column; gap: 0.3rem; }
+  .chess-stat-val {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem); color: var(--ink); line-height: 1;
+  }
+  .chess-stat-lbl {
+    font-size: 0.48rem; font-weight: 500; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--ink-muted);
+  }
+
+  .chess-right {
+    flex-shrink: 0;
+  }
+  .chess-board-wrap {
+    width: 180px; height: 180px;
+    border: 1px solid var(--rule);
+    overflow: hidden;
+    position: relative;
+  }
+  .chess-board-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .chess-board-placeholder {
+    width: 180px; height: 180px;
+    display: grid; grid-template-columns: repeat(8, 1fr);
+    border: 1px solid var(--rule);
+    flex-shrink: 0;
+  }
+  .chess-sq { aspect-ratio: 1; }
+  .chess-sq.l { background: var(--warm-white); }
+  .chess-sq.d { background: #C8B89A; }
+
+  .chess-game-info {
+    margin-top: 1.5rem;
+    font-size: 0.55rem; font-weight: 300;
+    color: var(--ink-muted); line-height: 1.8;
+    max-width: 180px; text-align: right;
+  }
+  .chess-result {
+    font-size: 0.6rem; font-weight: 600; letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .chess-result.win  { color: #4a7c59; }
+  .chess-result.loss { color: #8b3a3a; }
+  .chess-result.draw { color: var(--ink-muted); }
+
+  @media (max-width: 900px) {
+    .chess-section { flex-direction: column; align-items: flex-start; padding: 4rem 2rem; gap: 2.5rem; }
+    .chess-stats { gap: 2rem; }
+    .chess-game-info { text-align: left; }
+  }
+  @media (max-width: 600px) {
+    .chess-section { padding: 3rem 1.5rem; }
+  }
+
   /* ── Contact ────────────────────────── */
   #contact { background: var(--cream); padding: 10rem 4rem 0; border-top: 1px solid var(--rule); }
   .contact-head { display: flex; flex-direction: column; line-height: 1; margin-bottom: 5rem; overflow: visible; position: relative; z-index: 1; }
   .ch-sans { font-family: 'Montserrat', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: -0.02em; font-size: clamp(2rem, 6vw, 8rem); color: var(--ink); }
   .ch-script { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(2rem, 6vw, 9rem); color: var(--ink); margin-top: -0.05em; }
   .ch-sans2 { font-family: 'Montserrat', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: -0.02em; font-size: clamp(2rem, 6vw, 8rem); color: var(--ink); }
+  .contact-bridge {
+    font-size: clamp(0.85rem, 1.2vw, 1rem);
+    font-weight: 300; line-height: 1.7;
+    color: var(--ink-soft); margin-bottom: 2.5rem;
+    max-width: 520px;
+  }
   .contact-links-row { display: flex; gap: 6rem; align-items: flex-end; padding-bottom: 0.5rem; flex-wrap: wrap; }
   .c-link { display: flex; flex-direction: column; gap: 0.4rem; text-decoration: none; }
   .c-label { font-size: 0.55rem; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-muted); }
@@ -647,7 +749,7 @@
       </div>
       <div class="hero-rule"></div>
       <p class="hero-para">
-        I try things most people would wait years to attempt. I built <a href="expedition.html" class="hero-inline-link">Expedition<span class="link-arrow">↗</span></a> — a production-grade mobile app — having never written a line of code. I found a launch technique no other team had even considered and increased my <a href="glider.html" class="hero-inline-link">glider's<span class="link-arrow">↗</span></a> flight distance by <strong>178%</strong>. I rebuilt <a href="shpe.html" class="hero-inline-link">ERAU SHPE<span class="link-arrow">↗</span></a>'s corporate relations operation from the ground up and grew the pipeline <strong>50%</strong> in a single semester. And that's just the start.<br><br>
+        I try things most people would wait years to attempt. I built <a href="expedition.html" class="hero-inline-link">Expedition<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> — a production-grade mobile app — having never written a line of code. I found a launch technique no other team had even considered and increased my <a href="glider.html" class="hero-inline-link">glider's<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> flight distance by <strong>178%</strong>. I rebuilt <a href="shpe.html" class="hero-inline-link">ERAU SHPE<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>'s corporate relations operation from the ground up and grew the pipeline <strong>50%</strong> in a single semester. And that's just the start.<br><br>
         Systems engineering isn't just my major, it's my way of life. I see the whole system before I touch any part of it — and the output speaks for itself.<br><br>
         Thanks for being here. I sincerely hope what you find is worth your time.
       </p>
@@ -723,7 +825,7 @@
     <!-- ADD PHOTO: set background-image on .pc-bg below -->
     <!-- Best: dark screenshot of the app, or a moody render of the 3D world -->
     <a class="pc featured" href="expedition.html">
-      <div class="pc-bg bg-expedition" style="background-image:url('img/expedition.png')"></div>      
+      <div class="pc-bg bg-expedition" style="background-image:url('img/expedition.png')"></div>
       <div class="pc-overlay"></div>
       <!-- Resting state -->
       <div class="pc-rest">
@@ -873,7 +975,7 @@
           <div class="lead-date">Aug 2024 – Present</div>
         </div>
         <div class="lead-content">
-          <h4 class="lead-title"><a href="shpe.html" style="color:inherit;text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:2px;transition:border-color 0.2s;display:inline-flex;align-items:baseline;gap:0.2em;">Permanence Over Personality<span class="link-arrow">↗</span></a></h4>
+          <h4 class="lead-title"><a href="shpe.html" style="color:inherit;text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:2px;transition:border-color 0.2s;display:inline-flex;align-items:baseline;gap:0.2em;">Permanence Over Personality<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></h4>
           <p class="lead-desc">Built and led a two-director, two-subcommittee organization responsible for all corporate pipeline development, relationship management, and professional programming. Grew the chapter's corporate contacts list <strong>50% in a single semester</strong> through structured warm and cold outreach. Produced a campus-wide event with 100+ attendees to support member travel to the SHPE National Convention.</p>
           <div class="lead-stats">
             <div class="lead-stat"><span class="lead-stat-val">50%</span><span class="lead-stat-lbl">Pipeline growth in one semester</span></div>
@@ -934,7 +1036,7 @@
       </a>
       <a href="https://linkedin.com/in/giovanni-luis-gyorody" target="_blank" rel="noopener" class="c-link">
         <span class="c-label">LinkedIn</span>
-        <span class="c-value">Giovanni Gyorody</span>
+        <span class="c-value" style="border-bottom: 1px solid var(--ink);">Giovanni Gyorody<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       </a>
       <a href="resume.pdf" target="_blank" class="contact-resume-btn">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 10h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -942,6 +1044,41 @@
       </a>
     </div>
     <div class="c-rule"></div>
+
+    <!-- Chess Widget -->
+    <a href="https://www.chess.com/member/g-gyorody" target="_blank" rel="noopener" class="chess-section" id="chessWidget">
+      <div class="chess-left">
+        <div class="chess-eyebrow">Chess.com · g-gyorody</div>
+        <div class="chess-heading">I'm also currently seeking<br>my next chess opponent.</div>
+        <div class="chess-stats" id="chessStats">
+          <div class="chess-stat">
+            <span class="chess-stat-val" id="chessRapid">—</span>
+            <span class="chess-stat-lbl">Rapid</span>
+          </div>
+          <div class="chess-stat">
+            <span class="chess-stat-val" id="chessBlitz">—</span>
+            <span class="chess-stat-lbl">Blitz</span>
+          </div>
+          <div class="chess-stat">
+            <span class="chess-stat-val" id="chessBullet">—</span>
+            <span class="chess-stat-lbl">Bullet</span>
+          </div>
+        </div>
+        <div class="chess-sub">
+          View profile on Chess.com <svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="chess-right">
+        <!-- Placeholder board -->
+        <div class="chess-board-placeholder" id="chessBoardPlaceholder">
+          <!-- 64 squares rendered by JS -->
+        </div>
+        <div class="chess-game-info" id="chessGameInfo">
+          Loading last game…
+        </div>
+      </div>
+    </a>
+
     <footer>
       <div class="f-copy">© 2026 Giovanni Gyorody</div>
       <div class="f-initials">GG</div>
@@ -1068,6 +1205,88 @@
 
   // Start after splash
   setTimeout(startFlip, 2100);
+
+  // ── Chess Widget ─────────────────────
+  // Render placeholder board
+  const boardEl = document.getElementById('chessBoardPlaceholder');
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const sq = document.createElement('div');
+      sq.className = 'chess-sq ' + ((r + c) % 2 === 0 ? 'l' : 'd');
+      boardEl.appendChild(sq);
+    }
+  }
+
+  // Fetch stats and last game
+  async function loadChess() {
+    const user = 'g-gyorody';
+    try {
+      // Ratings
+      const statsRes = await fetch(`https://api.chess.com/pub/player/${user}/stats`);
+      if (statsRes.ok) {
+        const stats = await statsRes.json();
+        const rapid  = stats?.chess_rapid?.last?.rating;
+        const blitz  = stats?.chess_blitz?.last?.rating;
+        const bullet = stats?.chess_bullet?.last?.rating;
+        if (rapid)  document.getElementById('chessRapid').textContent  = rapid;
+        if (blitz)  document.getElementById('chessBlitz').textContent  = blitz;
+        if (bullet) document.getElementById('chessBullet').textContent = bullet;
+      }
+
+      // Last game
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const gamesRes = await fetch(`https://api.chess.com/pub/player/${user}/games/${year}/${month}`);
+      if (gamesRes.ok) {
+        const data = await gamesRes.json();
+        const games = data.games;
+        if (games && games.length > 0) {
+          const last = games[games.length - 1];
+
+          // Result
+          const isWhite = last.white.username.toLowerCase() === user.toLowerCase();
+          const myResult = isWhite ? last.white.result : last.black.result;
+          const opponent = isWhite ? last.black.username : last.white.username;
+          const resultMap = { win: 'Win', checkmated: 'Loss', resigned: 'Loss',
+            timeout: 'Loss', agreed: 'Draw', stalemate: 'Draw',
+            insufficient: 'Draw', repetition: 'Draw', timevsinsufficient: 'Draw' };
+          const resultText = resultMap[myResult] || myResult;
+          const resultClass = resultText === 'Win' ? 'win' : resultText === 'Loss' ? 'loss' : 'draw';
+
+          // Date
+          const gameDate = new Date(last.end_time * 1000);
+          const dateStr = gameDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+          // Time control label
+          const tc = last.time_class;
+          const tcLabel = tc.charAt(0).toUpperCase() + tc.slice(1);
+
+          document.getElementById('chessGameInfo').innerHTML = `
+            <span class="chess-result ${resultClass}">${resultText}</span><br>
+            vs ${opponent}<br>
+            ${tcLabel} · ${dateStr}
+          `;
+
+          // Board image from FEN using lichess board renderer
+          if (last.fen) {
+            const fen = last.fen.split(' ')[0]; // position only
+            const encodedFen = encodeURIComponent(last.fen);
+            const boardImg = document.createElement('img');
+            boardImg.src = `https://fen2image.chessvision.ai/${encodeURIComponent(last.fen)}`;
+            boardImg.alt = 'Last game position';
+            boardImg.style.cssText = 'width:180px;height:180px;display:block;';
+            boardImg.onerror = () => {}; // keep placeholder if image fails
+            boardEl.replaceWith(boardImg);
+          }
+        }
+      }
+    } catch(e) {
+      // Fail silently — placeholder board stays visible
+    }
+  }
+
+  loadChess();
 
   document.querySelectorAll('a:not(.pc)').forEach(el => {
     el.addEventListener('mouseenter', () => {
