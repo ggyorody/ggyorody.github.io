@@ -448,6 +448,7 @@
   }
   .chess-section:hover { background: var(--warm-white); }
 
+  .chess-left {}
   .chess-eyebrow {
     font-size: 0.5rem; font-weight: 600; letter-spacing: 0.35em;
     text-transform: uppercase; color: var(--gold); margin-bottom: 1rem;
@@ -741,16 +742,14 @@
   <!-- Hero -->
   <section id="hero">
     <div class="hero-left">
-      <div class="hero-eyebrow">Systems Engineering · Aerospace · ERAU · Class of 2028</div>
+      <div class="hero-eyebrow">Systems Engineering · Enterprise · ERAU · Class of 2028</div>
       <div>
         <span class="hero-first">Giovanni</span>
         <span class="hero-last">Gyorody.</span>
       </div>
       <div class="hero-rule"></div>
       <p class="hero-para">
-        I try things most people would wait years to attempt. I built <a href="expedition.html" class="hero-inline-link">Expedition<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> — a production-grade mobile app — having never written a line of code. I found a launch technique no other team had even considered and increased my <a href="glider.html" class="hero-inline-link">glider's<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> flight distance by <strong>178%</strong>. I rebuilt <a href="shpe.html" class="hero-inline-link">ERAU SHPE<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>'s corporate relations operation from the ground up and grew the pipeline <strong>50%</strong> in a single semester. And that's just the start.<br><br>
-        Systems engineering isn't just my major, it's my way of life. I see the whole system before I touch any part of it — and the output speaks for itself.<br><br>
-        Thanks for being here. I sincerely hope what you find is worth your time.
+        I build systems where the hardest problems aren't in any single component — they're in how everything connects. I architected a <a href="expedition.html" class="hero-inline-link">production-grade mobile platform<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> from zero with no prior coding experience, directing every layer from cloud infrastructure to real-time 3D rendering engine. I designed and manufactured a <a href="initium.html" class="hero-inline-link">pulse jet<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> from first principles. I found a solution in a <a href="glider.html" class="hero-inline-link">competition<svg class="link-arrow-svg" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8L8 2M8 2H3M8 2V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a> that every other team missed because I looked at the system before I looked at the parts. I'm a systems engineer training at <strong>Embry-Riddle</strong>, and I'm pointing everything I've built toward the next generation of autonomous and AI-integrated technology — the systems that will actually define what's possible in the next decade and beyond.
       </p>
       <div class="hero-actions">
         <a href="#work" class="hero-cta-link">View the work ↓</a>
@@ -835,7 +834,7 @@
       <!-- Hover state -->
       <div class="pc-hover">
         <div class="pc-hover-left">
-          <div class="pc-hover-num">01 · Feb 2026 – Present</div>
+          <div class="pc-hover-num">01 · Feb 2025 – Present</div>
           <div class="pc-hover-title">Expedition</div>
           <div class="pc-hover-sub">Founder &amp; Sole Engineer</div>
           <div class="pc-rule"></div>
@@ -1052,15 +1051,7 @@
         <div class="chess-stats" id="chessStats">
           <div class="chess-stat">
             <span class="chess-stat-val" id="chessRapid">—</span>
-            <span class="chess-stat-lbl">Rapid</span>
-          </div>
-          <div class="chess-stat">
-            <span class="chess-stat-val" id="chessBlitz">—</span>
-            <span class="chess-stat-lbl">Blitz</span>
-          </div>
-          <div class="chess-stat">
-            <span class="chess-stat-val" id="chessBullet">—</span>
-            <span class="chess-stat-lbl">Bullet</span>
+            <span class="chess-stat-lbl">Rapid Rating</span>
           </div>
         </div>
         <div class="chess-sub">
@@ -1225,11 +1216,7 @@
       if (statsRes.ok) {
         const stats = await statsRes.json();
         const rapid  = stats?.chess_rapid?.last?.rating;
-        const blitz  = stats?.chess_blitz?.last?.rating;
-        const bullet = stats?.chess_bullet?.last?.rating;
-        if (rapid)  document.getElementById('chessRapid').textContent  = rapid;
-        if (blitz)  document.getElementById('chessBlitz').textContent  = blitz;
-        if (bullet) document.getElementById('chessBullet').textContent = bullet;
+        if (rapid) document.getElementById('chessRapid').textContent = rapid;
       }
 
       // Last game
